@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 #include "ray.h"
 
 internal u32 
@@ -52,7 +53,10 @@ WriteImage(image_u32 Image, char *OutputFileName)
 internal v3
 RayCast(world *World, v3 RayOrigin, v3 RayDirection)
 {
-    v3 Result = {1, 0, 0};
+    v3 Result = World->Materials[0].Color;
+
+    f32 HitDistance = FLT_MAX;
+
     return Result;
 }
 
@@ -67,15 +71,15 @@ int main(int argc, char** argv)
     Plane.d = 0;
     Plane.MatIndex = 1; 
 
-    //sphere Spheres[5] = {};
+    sphere Spheres[5] = {};
 
     world World = {};
     World.SphereCount = 5;
-    World.Spheres;
+    World.Spheres = Spheres;
     World.PlaneCount = 1;
-    World.Planes;
+    World.Planes = &Plane;
     World.MaterialCount = 2;
-    World.Materials;
+    World.Materials = Materials;
 
     u32 OutputWidth = 1280;
     u32 OutputHeight = 720;
@@ -114,11 +118,6 @@ int main(int argc, char** argv)
     }
 
     WriteImage(Image, "test.bmp");
-
-
-    u32 TestColor = BGRAPack(V4(255.0f, 0, 0, 255.0f));
-    printf("Test Color: %#08x\n", TestColor);
-
 
     return 0;
 }
