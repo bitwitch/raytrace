@@ -1,14 +1,21 @@
 #include <xmmintrin.h>
 
-inline f32 Square(f32 A)
+inline u32
+RoundF32ToU32(f32 Real32)
 {
-    f32 Result = A*A;
+    u32 Result = (u32)_mm_cvtss_si32(_mm_set_ss(Real32));
     return Result;
 }
 
 inline f32 Sqrt(f32 X) 
 {
     f32 Result = _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(X)));
+    return Result;
+}
+
+inline f32 Square(f32 A)
+{
+    f32 Result = A*A;
     return Result;
 }
 
@@ -53,6 +60,48 @@ union v3
     f32 E[3];
 };
 
+union v4
+{
+    struct {
+        union
+        {
+            v3 xyz;
+            struct {
+                f32 x, y, z;
+            };
+        };
+        
+        f32 w;        
+    };
+    struct {
+        union
+        {
+            v3 rgb;
+            struct {
+                f32 r, g, b;
+            };
+        };
+        
+        f32 a;        
+    };
+    struct {
+        v2 xy;
+        f32 Ignored0_;
+        f32 Ignored1_;
+    };
+    struct {
+        f32 Ignored2_;
+        v2 yz;
+        f32 Ignored3_;
+    };
+    struct {
+        f32 Ignored4_;
+        f32 Ignored5_;
+        v2 zw;
+    };
+    f32 E[4];
+};
+
 inline v2
 V2(f32 X, f32 Y) 
 {
@@ -82,6 +131,27 @@ operator*(v3 B, f32 A)
     v3 Result = A*B;
     return Result;
 }
+
+inline v3
+operator-(v3 A, v3 B)
+{
+    v3 Result;
+    Result.x = A.x - B.x;
+    Result.y = A.y - B.y;
+    Result.z = A.z - B.z;
+    return Result;
+}
+
+inline v3
+operator+(v3 A, v3 B)
+{
+    v3 Result;
+    Result.x = A.x + B.x;
+    Result.y = A.y + B.y;
+    Result.z = A.z + B.z;
+    return Result;
+}
+
 
 inline v3
 V3(f32 X, f32 Y, f32 Z) 
@@ -142,4 +212,38 @@ NOZ(v3 A)
     return Result;
 }
 
+//
+// v4 operations
+//
+
+inline u32
+BGRAPack(v4 Color)
+{
+    u32 Result = ((RoundF32ToU32(Color.a) << 24) |
+                  (RoundF32ToU32(Color.r) << 16) |
+                  (RoundF32ToU32(Color.g) << 8)  |
+                  (RoundF32ToU32(Color.b) << 0));
+
+    return Result;
+}
+
+inline v4
+V4(f32 X, f32 Y, f32 Z, f32 W)
+{
+    v4 Result;
+    Result.x = X;
+    Result.y = Y;
+    Result.z = Z;
+    Result.w = W;
+    return Result;
+}
+
+inline v4
+V4(v3 XYZ, f32 W)
+{
+    v4 Result;
+    Result.xyz = XYZ;
+    Result.w = W;
+    return Result;
+}
 

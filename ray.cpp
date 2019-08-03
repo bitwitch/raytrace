@@ -49,23 +49,15 @@ WriteImage(image_u32 Image, char *OutputFileName)
     fclose(OutFile);
 }
 
+internal v3
+RayCast(world *World, v3 RayOrigin, v3 RayDirection)
+{
+    v3 Result = {1, 0, 0};
+    return Result;
+}
+
 int main(int argc, char** argv) 
 {
-    u32 OutputWidth = 1280;
-    u32 OutputHeight = 720;
-
-    image_u32 Image = AllocateImage(OutputWidth, OutputHeight);
-
-    // write pixels to image
-    u32 *Out = Image.Pixels;
-    for (u32 y = 0; y < OutputHeight; y++) {
-        for (u32 x = 0; x < OutputWidth; x++) {
-            *Out++ = y < 32 ? 0XFFA500 : 0xFF00FF00;
-        }
-    }
-
-    WriteImage(Image, "test.bmp");
-
     material Materials[2] = {};
     Materials[0].Color = V3(0,0,0);
     Materials[1].Color = V3(0,0,1);
@@ -85,7 +77,47 @@ int main(int argc, char** argv)
     World.MaterialCount = 2;
     World.Materials;
 
+    u32 OutputWidth = 1280;
+    u32 OutputHeight = 720;
 
+    image_u32 Image = AllocateImage(OutputWidth, OutputHeight);
+
+    v3 CameraP = V3(0, 10, 2);
+    v3 CameraZ = NOZ(CameraP);
+    v3 CameraX = NOZ(Cross(CameraZ, V3(0,0,1)));
+    v3 CameraY = NOZ(Cross(CameraZ, CameraX));
+
+    f32 FilmDist = 1.0f;
+    f32 FilmW = 1.0f;
+    f32 FilmH = 1.0f;
+    f32 HalfFilmW = 0.5f*FilmW;
+    f32 HalfFilmH = 0.5f*FilmH;
+    v3 FilmCenter = CameraP - FilmDist*CameraZ;
+
+    // write pixels to image
+    u32 *Out = Image.Pixels;
+    for (u32 y = 0; y < OutputHeight; y++) {
+        f32 FilmRatioY = 2.0f * ((f32)y / (f32)Image.Height) - 1.0f;
+        for (u32 x = 0; x < OutputWidth; x++) {
+            f32 FilmRatioX = 2.0f * ((f32)x / (f32)Image.Width) - 1.0f;
+            v3 FilmP = FilmCenter + FilmRatioX*HalfFilmW*CameraX + FilmRatioY*HalfFilmH*CameraY;
+
+            v3 RayOrigin = CameraP;
+            v3 RayDirection = NOZ(FilmP - CameraP);
+            
+            v3 Color = RayCast(&World, RayOrigin, RayDirection);
+
+            u32 BMPColor = BGRAPack(V4(Color*255.0f, 255.0f));
+
+            *Out++ = BMPColor;
+        }
+    }
+
+    WriteImage(Image, "test.bmp");
+
+
+    u32 TestColor = BGRAPack(V4(255.0f, 0, 0, 255.0f));
+    printf("Test Color: %#08x\n", TestColor);
 
 
     return 0;
