@@ -66,6 +66,28 @@ int main(int argc, char** argv)
 
     WriteImage(Image, "test.bmp");
 
+    material Materials[2] = {};
+    Materials[0].Color = V3(0,0,0);
+    Materials[1].Color = V3(0,0,1);
+
+    plane Plane = {};
+    Plane.N = V3(0,0,1);
+    Plane.d = 0;
+    Plane.MatIndex = 1; 
+
+    //sphere Spheres[5] = {};
+
+    world World = {};
+    World.SphereCount = 5;
+    World.Spheres;
+    World.PlaneCount = 1;
+    World.Planes;
+    World.MaterialCount = 2;
+    World.Materials;
+
+
+
+
     return 0;
 }
 
