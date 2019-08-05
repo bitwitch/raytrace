@@ -10,6 +10,10 @@ typedef int i32;
 
 typedef float f32;
 
+typedef bool b32;
+
+#define ArrayCount(Array) (sizeof(Array) / sizeof((Array)[0]))
+
 #include "ray_math.h"
 
 #pragma pack(push, 1)
@@ -40,7 +44,9 @@ struct image_u32 {
 };
 
 struct material {
-    v3 Color;
+    v3 EmitColor;
+    v3 ReflColor;
+    f32 Specular; // 0 is pure diffuse ("chalk"), 1 is pure specular ("mirror") 
 };
 
 struct sphere {

@@ -1,5 +1,6 @@
 #include <xmmintrin.h>
 
+// Intrinsics
 inline u32
 RoundF32ToU32(f32 Real32)
 {
@@ -13,12 +14,14 @@ inline f32 Sqrt(f32 X)
     return Result;
 }
 
+// Scalar operations
 inline f32 Square(f32 A)
 {
     f32 Result = A*A;
     return Result;
 }
 
+// Vector operations
 union v2 
 {
     struct {
@@ -152,6 +155,12 @@ operator+(v3 A, v3 B)
     return Result;
 }
 
+inline v3 &
+operator+=(v3 &A, v3 B)
+{
+    A = A + B;
+    return A;
+}
 
 inline v3
 V3(f32 X, f32 Y, f32 Z) 
@@ -209,6 +218,23 @@ NOZ(v3 A)
     if (LenSq > Square(0.0001f)) {
         Result = A * (1.0f / Length(A));
     }
+    return Result;
+}
+
+inline v3
+Lerp(v3 A, v3 B, f32 t)
+{
+    v3 Result = A*(1.0f - t) + B*t;
+    return Result;
+}
+
+inline v3
+Hadamard(v3 A, v3 B)
+{
+    v3 Result;
+    Result.x = A.x*B.x;
+    Result.y = A.y*B.y;
+    Result.z = A.z*B.z;
     return Result;
 }
 
