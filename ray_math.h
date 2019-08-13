@@ -8,17 +8,33 @@ RoundF32ToU32(f32 Real32)
     return Result;
 }
 
-inline f32 Sqrt(f32 X) 
+inline f32
+Sqrt(f32 X) 
 {
     f32 Result = _mm_cvtss_f32(_mm_sqrt_ss(_mm_set_ss(X)));
     return Result;
 }
 
 // Scalar operations
-inline f32 Square(f32 A)
+inline f32
+Square(f32 A)
 {
     f32 Result = A*A;
     return Result;
+}
+
+inline f32
+LinearTosRGB(f32 L)
+{
+   if (L < 0.0f) { L = 0.0f; }
+   if (L > 1.0f) { L = 1.0f; }
+
+   f32 S = L*12.92f;
+   if (L > 0.0031308f) {
+       S = 1.055f*pow(L, 1.0f/2.4f) - 0.055f;
+   }
+
+   return S;
 }
 
 // Vector operations
